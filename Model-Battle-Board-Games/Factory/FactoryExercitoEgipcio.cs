@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModelBattleBoardGames.Factory
+namespace BattleBoardGame.Model.Factory
 {
     class FactoryExercitoEgipcio : AbstractFactoryExercito
     {
