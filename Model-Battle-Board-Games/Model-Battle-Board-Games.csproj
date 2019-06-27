@@ -11,10 +11,8 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Factory\" />
     <Folder Include="Persas\" />
     <Folder Include="Indianos\" />
-    <Folder Include="Egipicios\" />
     <Folder Include="DAL\" />
   </ItemGroup>
   <ItemGroup>

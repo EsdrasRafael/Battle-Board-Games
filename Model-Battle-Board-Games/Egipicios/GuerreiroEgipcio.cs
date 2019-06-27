@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BattleBoardGame.Model
 {
-    class CavaleiroEgipicia : Cavaleiro
+    class GuerreiroEgipcio : Guerreiro
     {
     }
 }
