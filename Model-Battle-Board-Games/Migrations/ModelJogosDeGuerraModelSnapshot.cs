@@ -85,6 +85,8 @@ namespace ModelBattleBoardGames.Migrations
 
                     b.Property<int?>("ExercitoId1");
 
+                    b.Property<string>("Imagem");
+
                     b.Property<int>("Saude");
 
                     b.Property<int>("TabuleiroId");

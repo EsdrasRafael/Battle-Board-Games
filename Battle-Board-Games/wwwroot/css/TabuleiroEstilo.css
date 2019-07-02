@@ -15,6 +15,19 @@
     cursor: pointer;
 }
 
+.peca {
+    max-height: 35px;
+    max-width: 35px;
+}
+
+.flipped {
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
+}
 .casa_branca {
     background-color: #fff;
 }

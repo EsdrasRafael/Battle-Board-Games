@@ -14,7 +14,7 @@ namespace BattleBoardGame.Model.Factory
 
         public abstract Guerreiro CriarGuerreiro();
 
-        public enum Nacao { India=1, Persia=2, Egito=3, Japao=3};
+        public enum Nacao { India=1, Persia=2, Egito=3, Japao=4};
 
         /// <summary>
         /// Este método é uma factory para a Abstract Factory.

@@ -45,14 +45,18 @@ namespace Battle_Board_Games.Controllers
         }
 
         [Route("Tabuleiro/{batalhaId}")]
-        [HttpGet]
+        [HttpGet()]
         public ActionResult Tabuleiro(int batalhaId)
         {
             var batalha = _context.Batalhas
                 .Where(x => x.Id.Equals(batalhaId))
                 .Include(b => b.ExercitoBranco)
+                .Include(b => b.ExercitoBranco.Elementos)
+                .Include(b => b.ExercitoBranco.ElementosVivos)
                 .Include(b => b.ExercitoBranco.Usuario)
                 .Include(b => b.ExercitoPreto)
+                .Include(b => b.ExercitoPreto.Elementos)
+                .Include(b => b.ExercitoPreto.ElementosVivos)
                 .Include(b => b.ExercitoPreto.Usuario)
                 .Include(b => b.Tabuleiro)
                 .Include(b => b.Turno)

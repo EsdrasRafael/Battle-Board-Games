@@ -6,5 +6,9 @@ namespace BattleBoardGame.Model
 {
     class GuerreiroJapones : Guerreiro
     {
+        public GuerreiroJapones() : base()
+        {
+            Imagem = "";
+        }
     }
 }

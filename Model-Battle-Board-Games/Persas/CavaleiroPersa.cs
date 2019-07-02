@@ -8,5 +8,9 @@ namespace BattleBoardGame.Model
 {
     class CavaleiroPersa : Cavaleiro
     {
+        public CavaleiroPersa() : base()
+        {
+            Imagem = "";
+        }
     }
 }

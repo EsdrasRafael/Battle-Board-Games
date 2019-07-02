@@ -6,5 +6,9 @@ namespace BattleBoardGame.Model
 {
     class ArqueiroJapones : Arqueiro
     {
+        public ArqueiroJapones() : base()
+        {
+            Imagem = "";
+        }
     }
 }
