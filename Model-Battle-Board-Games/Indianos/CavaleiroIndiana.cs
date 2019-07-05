@@ -10,7 +10,7 @@ namespace BattleBoardGame.Model
     {
         public CavaleiroIndiana() : base()
         {
-            Imagem = "";
+            Imagem = "https://bit.ly/2XEZ4qT";
         }
     }
 }

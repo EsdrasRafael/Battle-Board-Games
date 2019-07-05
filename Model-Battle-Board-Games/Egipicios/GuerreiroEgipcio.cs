@@ -10,7 +10,7 @@ namespace BattleBoardGame.Model
     {
         public GuerreiroEgipcio() : base()
         {
-            Imagem = "";
+            Imagem = "https://bit.ly/2xuH3g7";
         }
     }
 }

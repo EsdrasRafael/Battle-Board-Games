@@ -10,7 +10,7 @@ namespace BattleBoardGame.Model
     {
         public ArqueiroIndiano() : base()
         {
-            Imagem = "";
+            Imagem = "https://bit.ly/2Nzx83R";
         }
     }
 }
