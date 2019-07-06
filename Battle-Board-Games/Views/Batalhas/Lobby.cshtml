@@ -4,6 +4,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @using static BattleBoardGame.Model.Factory.AbstractFactoryExercito;
+@using Microsoft.AspNetCore.Identity
+@using BattleBoardGames.Areas.Identity.Data
+@inject SignInManager<BattleBoardGamesUser> SignInManager
+@inject UserManager<BattleBoardGamesUser> UserManager
 
 <h2>Lobby</h2>
 
@@ -12,7 +16,8 @@
     <div class="row">
         <div class="col-md-5">
             <p style="text-align:right">
-                @if(!@String.IsNullOrEmpty(Model.ExercitoBranco.Usuario.PrimeiroNome))
+
+                @if (!@String.IsNullOrEmpty(Model.ExercitoBranco.Usuario.PrimeiroNome))
                 {
                     @Model.ExercitoBranco.Usuario.PrimeiroNome
                 }
@@ -20,8 +25,11 @@
                 {
                     @Model.ExercitoBranco.Usuario.Username
                 }
-                <select id="NacaoExercitoBranco" style="margin-left:20px;" class="btn btn-default dropdown-toggle" asp-items="Html.GetEnumSelectList<Nacao>()"></select>
-            </p>
+
+                @if(@Model.ExercitoBranco.Usuario.Username.Equals(UserManager.GetUserName(User)))
+                {
+                    <select id="NacaoExercitoBranco" style="margin-left:20px;" class="btn btn-default dropdown-toggle" asp-items="Html.GetEnumSelectList<Nacao>()"></select>
+                }
         </div>
         <div class="col-md-2">
             <p style="text-align:center">VS</p>
@@ -30,8 +38,10 @@
             <p style="text-align:left;">
                 @if (Model.ExercitoPreto != null)
                 {
-                    <select id="NacaoExercitoPreto" style="margin-right:20px;" class="btn btn-default dropdown-toggle" asp-items="Html.GetEnumSelectList<Nacao>()"></select>
-
+                    @if (@Model.ExercitoPreto.Usuario.Username.Equals(UserManager.GetUserName(User)))
+                    {
+                        <select id="NacaoExercitoPreto" style="margin-right:20px;" class="btn btn-default dropdown-toggle" asp-items="Html.GetEnumSelectList<Nacao>()"></select>
+                    }
                     @if (!@String.IsNullOrEmpty(Model.ExercitoPreto.Usuario.PrimeiroNome))
                     {
                         @Model.ExercitoPreto.Usuario.PrimeiroNome
@@ -43,7 +53,7 @@
                 }
                 else
                 {
-                <p>Esperando o próximo jogador...</p>
+<p>Esperando o próximo jogador...</p>
             }
             </div>
         </div>
@@ -65,4 +75,4 @@
             </environment>
 
         }
-</div>
+    </div>
