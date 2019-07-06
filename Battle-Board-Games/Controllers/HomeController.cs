@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using BattleBoardGame.Models;
 using Microsoft.AspNetCore.Authorization;
+using BattleBoardGame.Model;
+using BattleBoardGames.DAL;
 
 namespace BattleBoardGame.Controllers
 {
@@ -32,14 +34,6 @@ namespace BattleBoardGame.Controllers
         public IActionResult Privacy()
         {
             return View();
-        }
-       
-
-        private readonly Model.DAL.ModelJogosDeGuerra _context;
-
-        public HomeController(Model.DAL.ModelJogosDeGuerra context)
-        {
-            this._context = context;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -72,11 +66,8 @@ namespace BattleBoardGame.Controllers
         public ActionResult Tabuleiro(int BatalhaId = -1)
         {
             ViewBag.Title = "Tabuleiro";
-            var batalha = _context.Batalhas
-                   .Where(b => b.Id == BatalhaId).FirstOrDefault();
-            if (batalha != null)
-                return View(batalha);
-            return View();
+            Batalha batalha = HomeDAO.BuscarBatalha(BatalhaId);
+            return (batalha != null) ? View(batalha) : View();
         }
 
         public ActionResult Login(string usuario, string password, string rememberme, string returnurl)
