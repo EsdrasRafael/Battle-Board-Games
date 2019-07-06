@@ -17,7 +17,7 @@ namespace BattleBoardGames.DAL
     public class BatalhasAPIDAO
     {
         private static ModelJogosDeGuerra _context;
-        UserManager<BattleBoardGamesUser> _userManager;
+        readonly UserManager<BattleBoardGamesUser> _userManager;
         UsuarioService _usuarioService;
 
         public BatalhasAPIDAO(ModelJogosDeGuerra context, UserManager<BattleBoardGamesUser> userManager)
@@ -44,16 +44,16 @@ namespace BattleBoardGames.DAL
 
         public int GetBatalhasJogador(string name)
         {
-            return _context.Batalhas .Where(b => (b.ExercitoBranco != null 
-                    && b.ExercitoBranco.UsuarioId == name) 
-                    || (b.ExercitoPreto != null && b.ExercitoPreto.UsuarioId == name)).Count();
+            return _context.Batalhas.Where(b => (b.ExercitoBranco != null
+                   && b.ExercitoBranco.UsuarioId == name)
+                   || (b.ExercitoPreto != null && b.ExercitoPreto.UsuarioId == name)).Count();
         }
 
         public async Task<object> EscolherNacao(Nacao nacao, int ExercitoId)
         {
             Exercito exercito = _context.Exercitos.Where(e => e.Id == ExercitoId).FirstOrDefault();
             exercito.Nacao = nacao;
-            SalvarDadosAsync();
+            await SalvarDadosAsync();
             return exercito;
         }
 
@@ -94,9 +94,9 @@ namespace BattleBoardGames.DAL
             _context.SaveChanges();
         }
 
-        public void SalvarDadosAsync()
+        public async Task SalvarDadosAsync()
         {
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public ElementoDoExercito Mover(Movimento movimento)
@@ -124,10 +124,10 @@ namespace BattleBoardGames.DAL
             return await _context.Batalhas.FindAsync(id);
         }
 
-        public void RemoverBatalha(Batalha batalha)
+        public async Task RemoverBatalha(Batalha batalha)
         {
             _context.Batalhas.Remove(batalha);
-            SalvarDadosAsync();
+            await SalvarDadosAsync();
         }
 
         public void AtualizarBatalha(Batalha batalha)
@@ -135,10 +135,10 @@ namespace BattleBoardGames.DAL
             _context.Entry(batalha).State = EntityState.Modified;
         }
 
-        public void SalvarBatalha(Batalha batalha)
+        public async Task SalvarBatalha(Batalha batalha)
         {
             _context.Batalhas.Add(batalha);
-            SalvarDadosAsync();
+            await SalvarDadosAsync();
         }
 
         public Batalha BuscarBatalhaUsuario(Usuario usuario)
