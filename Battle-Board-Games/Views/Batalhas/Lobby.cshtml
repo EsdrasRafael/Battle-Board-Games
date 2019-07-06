@@ -12,7 +12,7 @@
     <div class="row">
         <div class="col-md-5">
             <p style="text-align:right">
-                @if (!@String.IsNullOrEmpty(Model.ExercitoBranco.Usuario.PrimeiroNome))
+                @if(!@String.IsNullOrEmpty(Model.ExercitoBranco.Usuario.PrimeiroNome))
                 {
                     @Model.ExercitoBranco.Usuario.PrimeiroNome
                 }
@@ -45,7 +45,6 @@
                 {
                 <p>Esperando o próximo jogador...</p>
             }
-                </p>
             </div>
         </div>
         <div class="row">
@@ -66,3 +65,4 @@
             </environment>
 
         }
+</div>

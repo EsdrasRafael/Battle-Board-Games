@@ -1,11 +1,9 @@
 ﻿using BattleBoardGame.Model;
 using BattleBoardGame.Model.DAL;
-using BattleBoardGame.Model.Factory;
 using BattleBoardGames.Areas.Identity.Data;
 using BattleBoardGames.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -42,11 +40,11 @@ namespace BattleBoardGames.DAL
             return _context.Batalhas.ToList();
         }
 
-        public int GetBatalhasJogador(string name)
+        public async Task<int> GetBatalhasJogador(string name)
         {
-            return _context.Batalhas.Where(b => (b.ExercitoBranco != null
+            return await _context.Batalhas.Where(b => (b.ExercitoBranco != null
                    && b.ExercitoBranco.UsuarioId == name)
-                   || (b.ExercitoPreto != null && b.ExercitoPreto.UsuarioId == name)).Count();
+                   || (b.ExercitoPreto != null && b.ExercitoPreto.UsuarioId == name)).CountAsync();
         }
 
         public async Task<object> EscolherNacao(Nacao nacao, int ExercitoId)

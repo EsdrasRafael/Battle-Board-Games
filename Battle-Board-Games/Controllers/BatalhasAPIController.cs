@@ -2,14 +2,12 @@
 using BattleBoardGame.Model.DAL;
 using BattleBoardGames.Areas.Identity.Data;
 using BattleBoardGames.DAL;
-using BattleBoardGames.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using static BattleBoardGame.Model.Factory.AbstractFactoryExercito;
 
@@ -28,7 +26,7 @@ namespace Battle_Board_Games.Controllers
 
         [HttpGet]
         [Route("QtdBatalhas")]
-        public async Task<IActionResult> ObterQuantidadeBatalhas()
+        public IActionResult ObterQuantidadeBatalhas()
         {
             return Ok(BatalhasAPIDAO.ObterQuantidadeBatalhas());
         }
@@ -55,15 +53,13 @@ namespace Battle_Board_Games.Controllers
         [Route("QtdBatalhasJogador")]
         public async Task<IActionResult> GetBatalhasJogador()
         {
-            int batalhas = BatalhasAPIDAO.GetBatalhasJogador(User.Identity.Name);
+            int batalhas = await BatalhasAPIDAO.GetBatalhasJogador(User.Identity.Name);
             return Ok(batalhas);
-
         }
-
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> EscolherNacao(Nacao nacao, int ExercitoId)
+        public IActionResult EscolherNacao(Nacao nacao, int ExercitoId)
         {
             return Ok(BatalhasAPIDAO.EscolherNacao(nacao, ExercitoId));
         }
@@ -90,7 +86,7 @@ namespace Battle_Board_Games.Controllers
 
         [Route("IniciarBatalha/{id}")]
         [Authorize]
-        public async Task<IActionResult> IniciarBatalha(int id)
+        public IActionResult IniciarBatalha(int id)
         {
             Usuario usuario = BatalhasAPIDAO.BuscarUsuario(this.User);
 
@@ -104,9 +100,11 @@ namespace Battle_Board_Games.Controllers
 
             if (batalha.Tabuleiro == null)
             {
-                batalha.Tabuleiro = new Tabuleiro();
-                batalha.Tabuleiro.Altura = 8;
-                batalha.Tabuleiro.Largura = 8;
+                batalha.Tabuleiro = new Tabuleiro
+                {
+                    Altura = 8,
+                    Largura = 8
+                };
             }
             try
             {
@@ -120,7 +118,7 @@ namespace Battle_Board_Games.Controllers
                     batalha.Estado = Batalha.EstadoBatalhaEnum.Iniciado;
                 }
             }
-            catch (ArgumentException arg)
+            catch (ArgumentException)
             {
                 BadRequest("Não foi escolhido uma nação.");
             }
@@ -165,7 +163,7 @@ namespace Battle_Board_Games.Controllers
                 batalha.Turno = null;
                 batalha.TurnoId = batalha.TurnoId == batalha.ExercitoBrancoId ?
                     batalha.ExercitoPretoId : batalha.ExercitoBrancoId;
-                BatalhasAPIDAO.SalvarDadosAsync();
+                await BatalhasAPIDAO.SalvarDadosAsync();
                 return Ok(batalha);
             }
             return BadRequest("Operação não realizada");
@@ -190,7 +188,7 @@ namespace Battle_Board_Games.Controllers
 
             try
             {
-                BatalhasAPIDAO.SalvarDadosAsync();
+                await BatalhasAPIDAO.SalvarDadosAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -216,7 +214,7 @@ namespace Battle_Board_Games.Controllers
                 return BadRequest(ModelState);
             }
 
-            BatalhasAPIDAO.SalvarBatalha(batalha);
+            await BatalhasAPIDAO.SalvarBatalha(batalha);
 
             return CreatedAtAction("GetBatalha", new { id = batalha.Id }, batalha);
         }
@@ -224,7 +222,7 @@ namespace Battle_Board_Games.Controllers
         [HttpGet]
         [Route("CriarBatalha")]
         [Authorize]
-        public async Task<IActionResult> CriarBatalha()
+        public IActionResult CriarBatalha()
         {
 
             Usuario usuario = BatalhasAPIDAO.BuscarUsuario(this.User);
@@ -236,9 +234,11 @@ namespace Battle_Board_Games.Controllers
                 batalha = new Batalha();
                 BatalhasAPIDAO.AdicionarBatalha(batalha);
             }
-            Exercito e = new Exercito();
-            e.Usuario = usuario;
-            e.Nacao = Nacao.Egito;
+            Exercito e = new Exercito
+            {
+                Usuario = usuario,
+                Nacao = Nacao.Egito
+            };
             if (batalha.ExercitoBrancoId == null)
             {
                 batalha.ExercitoBranco = e;
@@ -268,7 +268,7 @@ namespace Battle_Board_Games.Controllers
                 return NotFound();
             }
 
-            BatalhasAPIDAO.RemoverBatalha(batalha);
+            await BatalhasAPIDAO.RemoverBatalha(batalha);
 
             return Ok(batalha);
         }

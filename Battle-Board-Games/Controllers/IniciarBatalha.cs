@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using static BattleBoardGame.Model.Factory.AbstractFactoryExercito;
+﻿using static BattleBoardGame.Model.Factory.AbstractFactoryExercito;
 
 namespace BattleBoardGames.Controllers
 {
