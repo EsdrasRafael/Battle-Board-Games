@@ -4,9 +4,9 @@ using System.Text;
 
 namespace ModelBattleBoardGames
 {
-    public class BatalhasExeception : Exception
+    public class BatalhaExeception : Exception
     {
-        public BatalhasExeception(string mensagem)
+        public BatalhaExeception(string mensagem)
             : base(mensagem) { }
     }
 }

@@ -1,8 +1,7 @@
-﻿using BattleBoardGame.Model;
-using BattleBoardGame.Model.DAL;
-using BattleBoardGames.DAL;
+﻿
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Service_Battle_Board_Games;
 
 namespace Battle_Board_Games.Controllers
 {
@@ -11,17 +10,18 @@ namespace Battle_Board_Games.Controllers
     public class BatalhasController : Controller
     {
 
-        private readonly BatalhasDAO BatalhasDAO;
-        public BatalhasController(ModelJogosDeGuerra context)
+        private readonly IBatalhaService _batalhaService;
+
+        public BatalhasController(IBatalhaService batalhaService)
         {
-            BatalhasDAO = new BatalhasDAO(context);
+            _batalhaService = batalhaService;
         }
 
         [Route("Lobby/{batalhaId}")]
         [HttpGet()]
         public ActionResult Lobby(int batalhaId)
         {
-            Batalha batalha = BatalhasDAO.BuscarLobby(batalhaId);
+            var batalha = _batalhaService.BuscarLobby(batalhaId).Result;
             ViewBag.Id = batalha.Id;
             return View(batalha);
         }
@@ -30,9 +30,10 @@ namespace Battle_Board_Games.Controllers
         [HttpGet()]
         public ActionResult Tabuleiro(int batalhaId)
         {
-            Batalha batalha = BatalhasDAO.BuscarBatalha(batalhaId);
+            var batalha = _batalhaService.BuscarTabuleiroAsync(batalhaId).Result;
             ViewBag.Id = batalha.Id;
             return View(batalha);
         }
+
     }
 }

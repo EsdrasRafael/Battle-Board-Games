@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Model-Battle-Board-Games\Model-Battle-Board-Games.csproj" />
+    <ProjectReference Include="..\Service-Battle-Board-Games\Service-Battle-Board-Games.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Models\packages.config" />

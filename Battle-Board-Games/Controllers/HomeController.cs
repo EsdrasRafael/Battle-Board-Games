@@ -2,19 +2,24 @@
 using Microsoft.AspNetCore.Mvc;
 using BattleBoardGame.Models;
 using Microsoft.AspNetCore.Authorization;
-using BattleBoardGame.Model;
-using BattleBoardGames.DAL;
+using Service_Battle_Board_Games;
 
 namespace BattleBoardGame.Controllers
 {
     public class HomeController : Controller
     {
 
+        private readonly IBatalhaService _batalhaService;
+
+        public HomeController(IBatalhaService batalhaService)
+        {
+            _batalhaService = batalhaService;
+        }
 
         public IActionResult About()
         {
             ViewData["Message"] = "Aplicação desenvolvida para o curso de Análise" +
-            	" e Desenvolvimento de Sistemas da Universidade Positivo.";
+                " e Desenvolvimento de Sistemas da Universidade Positivo.";
 
             return View();
         }
@@ -38,16 +43,15 @@ namespace BattleBoardGame.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-
         [AllowAnonymous]
         public ActionResult Index()
         {
             ViewBag.Title = "Home Page";
             bool usuarioAutenticado = true;
-/*                Utils.Utils.ObterUsuarioLogado(
-                    ctx
-                    ) != null;
-*/
+            /*                Utils.Utils.ObterUsuarioLogado(
+                                ctx
+                                ) != null;
+            */
             if (!usuarioAutenticado)
             {
                 return RedirectToAction("Login");
@@ -56,14 +60,15 @@ namespace BattleBoardGame.Controllers
             return View();
         }
 
-
-
-
         public ActionResult Tabuleiro(int BatalhaId = -1)
         {
             ViewBag.Title = "Tabuleiro";
-            Batalha batalha = HomeDAO.BuscarBatalha(BatalhaId);
-            return (batalha != null) ? View(batalha) : View();
+            var batalha = _batalhaService.BuscarPorIdAsync(BatalhaId);
+
+            if (batalha != null)
+                return View(batalha);
+
+            return View();
         }
 
         public ActionResult Login(string usuario, string password, string rememberme, string returnurl)
