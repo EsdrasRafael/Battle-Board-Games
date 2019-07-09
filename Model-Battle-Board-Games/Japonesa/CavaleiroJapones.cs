@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace BattleBoardGame.Model
 {
@@ -8,7 +10,7 @@ namespace BattleBoardGame.Model
     {
         public CavaleiroJapones() : base()
         {
-            Imagem = "https://tormentopabulum.files.wordpress.com/2015/03/mamluk2.png";
+            Imagem = "https://bit.ly/2YRZTJW";
         }
     }
 }

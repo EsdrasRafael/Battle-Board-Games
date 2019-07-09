@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@using static BattleBoardGame.Model.Factory.AbstractFactoryExercito;
 @using Microsoft.AspNetCore.Identity
 @using BattleBoardGames.Areas.Identity.Data
 @inject SignInManager<BattleBoardGamesUser> SignInManager
@@ -10,14 +11,17 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
-<h5>Seja Bem Vindo! - @UserManager.GetUserName(User) </h5>
-<p>Quantidade de Batalhas do Jogador</p><p id="qtdBatalhasJogador"></p>
-<button class="btn btn-primary" onclick="criarJogo()">
-    Criar Jogo
-</button>
+    <h5>Seja Bem Vindo! - @UserManager.GetUserName(User) </h5>
+    <p>Quantidade de Batalhas do Jogador</p><p id="qtdBatalhasJogador"></p>
+
+    <select id="NacaoEscolhida" style="margin-left:20px;" class="btn btn-default dropdown-toggle" asp-items="Html.GetEnumSelectList<Nacao>()"></select>
+
+    <button class="btn btn-primary" onclick="criarJogo()">
+        Criar Jogo
+    </button>
 }
 <p>Quantidade de Batalhas Total:</p><p id="qtdBatalhas"></p>
 
-@section Scripts{ 
-<script src="~/js/batalhas.js"></script>
+@section Scripts{
+    <script src="~/js/batalhas.js"></script>
 }

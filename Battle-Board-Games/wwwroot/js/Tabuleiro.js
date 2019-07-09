@@ -76,17 +76,16 @@ $(function () {
                         continue;
                     }
                     if (pecas[x].posicao.altura == i && pecas[x].posicao.largura == j){
-                        pecasNoTabuleiro[i][j] = pecas[x];                    
-                        if (pecas[x].exercitoId==ExercitoBrancoId) {
+                        pecasNoTabuleiro[i][j] = pecas[x]; 
+
+                        if (pecas[x].exercitoId == ExercitoBrancoId) {
                             $("#" + nome_casa).append("<img src='" + pecas[x].imagem + "' class='peca flipped' id='" + nome_casa.replace("casa", "peca_preta") + "'/>");
                         }
                         else if (pecas[x].exercitoId == ExercitoPretoId) {
                             $("#" + nome_casa).append("<img src='" + pecas[x].imagem + "' class='peca' id='" + nome_casa.replace("casa", "peca_branca") + "'/>");
                         }
-
                     }                    
                 }
-
             }
         }
         $(".casa").click(function () {

@@ -15,7 +15,7 @@ namespace BattleBoardGame.Model.Factory
 
         public override Cavaleiro CriarCavalaria()
         {
-            return new CavaleiroIndiana();
+            return new CavaleiroIndiano();
         }
 
         public override Guerreiro CriarGuerreiro()

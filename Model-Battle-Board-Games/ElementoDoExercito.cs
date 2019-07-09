@@ -89,7 +89,6 @@ namespace BattleBoardGame.Model
         public abstract int Ataque { get; protected set; }
 
         [DataMember]
-
         public abstract string Imagem { get; protected set; }
     }
 

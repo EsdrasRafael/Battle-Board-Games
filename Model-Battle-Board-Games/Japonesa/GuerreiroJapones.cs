@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace BattleBoardGame.Model
 {
-    class CavaleiroIndiana : Cavaleiro
+    class GuerreiroJapones : Guerreiro
     {
-        public CavaleiroIndiana() : base()
+        public GuerreiroJapones() : base()
         {
-            Imagem = "https://bit.ly/2XEZ4qT";
+            Imagem = "https://bit.ly/2LLuLbF";
         }
     }
 }

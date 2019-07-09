@@ -1,19 +1,25 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using BattleBoardGame.Models;
 using Microsoft.AspNetCore.Authorization;
-using Service_Battle_Board_Games;
+using BattleBoardGame.Model;
+using BattleBoardGames.DAL;
 
 namespace BattleBoardGame.Controllers
 {
     public class HomeController : Controller
     {
 
-        private readonly IBatalhaService _batalhaService;
+        BancoDAO BancoDAO;
 
-        public HomeController(IBatalhaService batalhaService)
+        //Construtor
+        public HomeController(Model.DAL.ModelJogosDeGuerra context)
         {
-            _batalhaService = batalhaService;
+            BancoDAO = new BancoDAO(context);
         }
 
         public IActionResult About()
@@ -37,11 +43,15 @@ namespace BattleBoardGame.Controllers
             return View();
         }
 
+
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
 
         [AllowAnonymous]
         public ActionResult Index()
@@ -63,11 +73,9 @@ namespace BattleBoardGame.Controllers
         public ActionResult Tabuleiro(int BatalhaId = -1)
         {
             ViewBag.Title = "Tabuleiro";
-            var batalha = _batalhaService.BuscarPorIdAsync(BatalhaId);
-
+            Batalha batalha = BancoDAO.RetornarBatalha(BatalhaId);
             if (batalha != null)
                 return View(batalha);
-
             return View();
         }
 

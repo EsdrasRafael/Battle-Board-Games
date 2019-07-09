@@ -6,13 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190709140446_c.cs" />
+    <Compile Remove="Migrations\20190709140446_c.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Model-Battle-Board-Games\Model-Battle-Board-Games.csproj" />
-    <ProjectReference Include="..\Service-Battle-Board-Games\Service-Battle-Board-Games.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Models\packages.config" />
@@ -29,5 +33,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Identity\Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="wwwroot\js\site.min.js">
+      <DependentUpon>site.js</DependentUpon>
+    </Content>
   </ItemGroup>
 </Project>

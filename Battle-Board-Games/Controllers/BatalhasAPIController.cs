@@ -1,17 +1,15 @@
 ﻿using BattleBoardGame.Model;
 using BattleBoardGame.Model.DAL;
 using BattleBoardGames.Areas.Identity.Data;
-using BattleBoardGames.Controllers;
+using BattleBoardGames.DAL;
 using BattleBoardGames.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ModelBattleBoardGames;
-using Service_Battle_Board_Games;
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Linq;
 using System.Threading.Tasks;
 using static BattleBoardGame.Model.Factory.AbstractFactoryExercito;
 
@@ -21,180 +19,295 @@ namespace Battle_Board_Games.Controllers
     [ApiController]
     public class BatalhasAPIController : ControllerBase
     {
-        private readonly IBatalhaService _batalhaService;
-
+        BancoDAO BancoDAO;
         UsuarioService _usuarioService;
-        UserManager<BattleBoardGamesUser> _userManager;
 
-        public BatalhasAPIController(IBatalhaService batalhaService, UserManager<BattleBoardGamesUser> userManager, ModelJogosDeGuerra context)
+        public BatalhasAPIController(ModelJogosDeGuerra context, UserManager<BattleBoardGamesUser> userManager)
         {
-            _batalhaService = batalhaService;
-            _userManager = userManager;
-            _usuarioService = new UsuarioService(context, _userManager);
+            BancoDAO = new BancoDAO(context);
+            _usuarioService = new UsuarioService(context, userManager);
         }
 
-        [HttpGet("QtdBatalhas")]
-        public async Task<IActionResult> ObterQuantidadeBatalhas()
-            => Ok(await _batalhaService.BuscarQuantidadeAsync());
-
         [HttpGet]
-        [Authorize]
-        public async Task<IEnumerable<Batalha>> GetBatalhas(bool Finalizada = false)
-            => await _batalhaService.BuscarAsync(Finalizada);
+        [Route("QtdBatalhas")]
+        public async Task<IActionResult> ObterQuantidadeBatalhas()
+        {
+            return Ok(await BancoDAO.RetornarQuantidadeBatalhas());
+        }
 
-        [HttpGet("QtdBatalhasJogador")]
+        // GET: api/BatalhasAPI
         [Authorize]
+        [HttpGet]
+        public IEnumerable<Batalha> GetBatalhas(bool Finalizada = false)
+        {
+            IEnumerable<Batalha> batalhas;
+            if (Finalizada)
+            {
+                batalhas = BancoDAO.RetornarBatalhasFinalizadas();
+            }
+            else
+            {
+                batalhas = BancoDAO.RetornarTodasBatalhas();
+            }
+            return batalhas;
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("QtdBatalhasJogador")]
         public async Task<IActionResult> GetBatalhasJogador()
         {
-            var usuario = _usuarioService.ObterUsuarioEmail(User);
-            return Ok(await _batalhaService.ContarPorJogador(usuario.Id));
+            int batalhas = BancoDAO.RetornarBatalhasJogador(User.Identity.Name);
+            return Ok(batalhas);
         }
 
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> EscolherNacao(Nacao nacao, int exercitoId)
-            => Ok(await _batalhaService.EscolherNacaoAsync(nacao, exercitoId));
+        public async Task<IActionResult> EscolherNacao(Nacao nacao, int ExercitoId)
+        {
 
+            Exercito exercito = BancoDAO.BuscarExercitoPorID(ExercitoId);
+            exercito.Nacao = nacao;
+
+            await BancoDAO.AlterarDadosAsync();
+
+            return Ok(exercito);
+        }
+
+        // GET: api/BatalhasAPI?id=5
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<IActionResult> GetBatalha(int id)
+        public async Task<IActionResult> GetBatalha([FromRoute] int id)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                var batalha = await _batalhaService.BuscarAsync(id);
-
-                if (batalha is null)
-                    return NotFound();
-
-                return Ok(batalha);
+                return BadRequest(ModelState);
             }
-            catch
+
+            Batalha batalha = await BancoDAO.BatalhaPorID(id);
+
+            if (batalha == null)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                return NotFound();
             }
+
+            return Ok(batalha);
         }
 
-        [HttpPost("IniciarBatalha/{id}")]
+        [Route("IniciarBatalha/{id}")]
         [Authorize]
-        public async Task<IActionResult> IniciarBatalha(int id, IniciarBatalha iniciarBatalhaRequest)
+        public async Task<IActionResult> IniciarBatalha(int id)
         {
+            Usuario usuario = _usuarioService.ObterUsuarioEmail(this.User);
+
+
+            //Get batalha
+            Batalha batalha = BancoDAO.RetornarBatalhaPorUsuario(usuario, id);
+
+            if (batalha == null)
+            {
+                return NotFound();
+            }
+
+            if (batalha.Tabuleiro == null)
+            {
+                batalha.Tabuleiro = new Tabuleiro();
+                batalha.Tabuleiro.Altura = 8;
+                batalha.Tabuleiro.Largura = 8;
+            }
             try
             {
-                var usuario = _usuarioService.ObterUsuarioEmail(User);
-
-                var batalha = await _batalhaService.IniciarAsync(
-                    new IniciarBatalhaParams
-                    {
-                        Id = id,
-                        Jogador = usuario.Id,
-                        NacaoExercitoBranco = iniciarBatalhaRequest.NacaoExercitoBranco,
-                        NacaoExercitoPreto = iniciarBatalhaRequest.NacaoExercitoPreto
-
-                    });
-
-                return Ok(batalha);
+                if (batalha.Estado == Batalha.EstadoBatalhaEnum.NaoIniciado)
+                {
+                    batalha.Tabuleiro.IniciarJogo(batalha.ExercitoBranco, batalha.ExercitoPreto);
+                    Random r = new Random();
+                    batalha.Turno = r.Next(100) < 50
+                        ? batalha.ExercitoPreto :
+                        batalha.ExercitoBranco;
+                    batalha.Estado = Batalha.EstadoBatalhaEnum.Iniciado;
+                }
             }
-            catch (BatalhaExeception exception)
+            catch (ArgumentException arg)
             {
-                return BadRequest(exception.Message);
-            }
-            catch
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                BadRequest("Não foi escolhido uma nação.");
             }
 
+            BancoDAO.AlterarDados();
+
+            return Ok(batalha);
         }
 
-        [HttpPost("Jogar")]
         [Authorize]
+        [Route("Jogar")]
+        [HttpPost]
         public async Task<IActionResult> Jogar([FromBody]Movimento movimento)
         {
-            try
+            movimento.Elemento = BancoDAO.BuscarElementoPorId(movimento.ElementoId);
+
+            if (movimento.Elemento == null)
             {
-                var usuario = _usuarioService.ObterUsuarioEmail(User);
-                return Ok(await _batalhaService.JogarAsync(movimento, usuario.Id));
+                return NotFound();
             }
-            catch (BatalhaExeception exception)
+
+            movimento.Batalha = BancoDAO.RetornarBatalhaPorId(movimento.BatalhaId);
+
+            var usuario = this._usuarioService.ObterUsuarioEmail(this.User);
+
+
+            if (usuario.Id != movimento.AutorId)
             {
-                return BadRequest(exception.Message);
+                return Forbid("O usuário autenticado não é o autor da jogada");
             }
-            catch
+
+            var batalha = movimento.Batalha;
+            if (movimento.AutorId != movimento.Elemento.Exercito.UsuarioId)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                //Usuário não é o dono do exercito.
+                return Forbid("O jogador não é dono do exercito");
             }
+            if (movimento.AutorId == batalha.Turno.UsuarioId)
+            {
+                if (!batalha.Jogar(movimento))
+                {
+                    return BadRequest("A jogada é invalida");
+                }
+                batalha.Turno = null;
+                batalha.TurnoId = batalha.TurnoId == batalha.ExercitoBrancoId ?
+                    batalha.ExercitoPretoId : batalha.ExercitoBrancoId;
+                await BancoDAO.AlterarDadosAsync();
+                return Ok(batalha);
+            }
+            return BadRequest("Operação não realizada");
+
         }
 
+        // PUT: api/BatalhasAPI/5
         [HttpPut("{id}")]
-        [Authorize]
         public async Task<IActionResult> PutBatalha([FromRoute] int id, [FromBody] Batalha batalha)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != batalha.Id)
+            {
+                return BadRequest();
+            }
+
+            BancoDAO.AlterarBatalha(batalha);
+
+
             try
             {
-                return Ok(await _batalhaService.AtualizarAsync(id, batalha));
+                await BancoDAO.AlterarDadosAsync();
             }
-            catch (BatalhaExeception exception)
+            catch (DbUpdateConcurrencyException)
             {
-                return BadRequest(exception.Message);
+                if (BancoDAO.BuscarBatalha(id) == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
-            catch
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
-            }
+
+            return NoContent();
         }
 
+        // POST: api/BatalhasAPI
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> PostBatalha([FromBody] Batalha batalha)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                batalha = await _batalhaService.EnviarAsync(batalha);
-                return CreatedAtAction
-                    (
-                        actionName: nameof(GetBatalha),
-                        routeValues: new { id = batalha.Id },
-                        value: batalha
-                    );
+                return BadRequest(ModelState);
             }
-            catch
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
-            }
+
+            BancoDAO.AdicionarBatalha(batalha);
+            await BancoDAO.AlterarDadosAsync();
+
+            return CreatedAtAction("GetBatalha", new { id = batalha.Id }, batalha);
         }
 
         [HttpGet]
-        [Route("CriarBatalha")]
+        [Route("CriarBatalha/{idNacao}")]
+        //[Route("CriarBatalha")]
         [Authorize]
-        public async Task<IActionResult> CriarBatalha()
+        public async Task<IActionResult> CriarBatalha(int idNacao)
+        //public async Task<IActionResult> CriarBatalha()
         {
-            try
+            Usuario usuario = _usuarioService.ObterUsuarioEmail(this.User);
+
+            Batalha batalha = BancoDAO.BuscarBatalhaPendente(usuario);
+
+            if (batalha == null)
             {
-                var usuario = _usuarioService.ObterUsuarioEmail(User);
-                var batalha = await _batalhaService.CriarAsync(usuario);
-                return Ok(batalha);
+                batalha = new Batalha();
+                BancoDAO.AdicionarBatalha(batalha);
             }
-            catch
+
+            Exercito e = new Exercito();
+            e.Usuario = usuario;
+
+            switch (idNacao)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                case 1:
+                    e.Nacao = Nacao.India;
+                    break;
+                case 2:
+                    e.Nacao = Nacao.Persia;
+                    break;
+                case 3:
+                    e.Nacao = Nacao.Egito;
+                    break;
+                case 4:
+                    e.Nacao = Nacao.Japones;
+                    break;
+                default:
+                    break;
             }
+
+
+            if(batalha.ExercitoBrancoId == null)
+            {
+                batalha.ExercitoBranco = e;
+            }
+            else if (batalha.ExercitoPretoId == null)
+            {
+                batalha.ExercitoPreto = e;
+            }
+            BancoDAO.AlterarDados();
+            return Ok(batalha);
         }
 
+
+
+        // DELETE: api/BatalhasAPI/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBatalha(int id)
+        public async Task<IActionResult> DeleteBatalha([FromRoute] int id)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                return Ok(await _batalhaService.DeletarAsync(id));
+                return BadRequest(ModelState);
             }
-            catch (BatalhaExeception exception)
+
+            Batalha batalha = await BancoDAO.BuscarBatalha(id);
+
+            if (batalha == null)
             {
-                return BadRequest(exception.Message);
+                return NotFound();
             }
-            catch
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
-            }
+
+            BancoDAO.RemoverBatalha(batalha);
+
+            await BancoDAO.AlterarDadosAsync();
+
+            return Ok(batalha);
         }
+
     }
 }

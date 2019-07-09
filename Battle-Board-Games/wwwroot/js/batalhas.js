@@ -33,7 +33,7 @@ function criarJogo() {
     $.ajax({
         type: 'GET',
         url: baseURL +
-            "/api/BatalhasAPI/CriarBatalha"
+            "/api/BatalhasAPI/CriarBatalha/" + $('#NacaoEscolhida option:selected').val()
     })
         .done(
             function (data) {

@@ -1,10 +1,9 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ModelBattleBoardGames.Migrations
 {
-    public partial class IdTOString : Migration
+    public partial class crdd : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -27,8 +26,8 @@ namespace ModelBattleBoardGames.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true),
+                    PrimeiroNome = table.Column<string>(nullable: true),
+                    SobreNome = table.Column<string>(nullable: true),
                     Username = table.Column<string>(nullable: true),
                     Password = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true)
@@ -121,6 +120,7 @@ namespace ModelBattleBoardGames.Migrations
                     AlcanceMovimento = table.Column<int>(nullable: false),
                     AlcanceAtaque = table.Column<int>(nullable: false),
                     Ataque = table.Column<int>(nullable: false),
+                    Imagem = table.Column<string>(nullable: true),
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Saude = table.Column<int>(nullable: false),

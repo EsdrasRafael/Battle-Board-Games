@@ -1,8 +1,8 @@
-﻿using BattleBoardGame.Model;
-using BattleBoardGame.Model.Factory;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace BattleBoardGame.Model.Factory
 {
@@ -10,17 +10,17 @@ namespace BattleBoardGame.Model.Factory
     {
         public override Arqueiro CriarArqueiro()
         {
-            throw new NotImplementedException();
+            return new ArqueiroJapones();
         }
 
         public override Cavaleiro CriarCavalaria()
         {
-            throw new NotImplementedException();
+            return new CavaleiroJapones();
         }
 
         public override Guerreiro CriarGuerreiro()
         {
-            throw new NotImplementedException();
+            return new GuerreiroJapones();
         }
     }
 }

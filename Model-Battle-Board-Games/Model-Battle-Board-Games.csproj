@@ -12,10 +12,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Persas\" />
-    <Folder Include="Indianos\" />
     <Folder Include="DAL\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Class1.cs" />
+    <Compile Remove="Migrations\20190708023044_Create.cs" />
   </ItemGroup>
 </Project>
